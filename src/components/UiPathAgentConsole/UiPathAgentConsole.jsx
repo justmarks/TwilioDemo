@@ -14,6 +14,8 @@ const UiPathAgentConsole = (props) => {
   let UiPathRobot = window.UiPathRobot;
 
   function RunProcess(e) {
+    var processId = GetProcessByName(processName);
+
     UiPathRobot.runProcess(processId, null, (status) => {
         JobStatus(status);
       }).then(
@@ -28,12 +30,23 @@ const UiPathAgentConsole = (props) => {
             console.log(processes[i].id + " " + processes[i].name);
         }
     });
-}
+  }
 
-function JobStatus(status)
-{
-    document.getElementById('robot_status').innerHTML = status;
-}
+  function GetProcessByName(processName) {
+    UiPathRobot.getRobotProcesses().then((processes) => {
+      for (var i=0; i<processes.length; i++) {
+        if (processes[i].name.toLowerCase().startsWith(processName.toLowerCase())) {
+          console.log("Found the matching process: " + processes[i].name + " (" + processes[i].id + ")");
+          return processes[i].id;
+        }
+      }
+    });
+  }
+
+  function JobStatus(status)
+  {
+      document.getElementById('robot_status').innerHTML = status;
+  }
 
   return (
     <UiPathAgentConsoleStyles>
@@ -41,7 +54,7 @@ function JobStatus(status)
             <ul>
                 <button onClick={RunProcess}>Change of Address</button><br />
                 <button onClick={GetProcesses}>Add policy</button><br />
-                <button onClick={RunProcess}>Terminate policy</button><br />
+                <button onClick={GetProcesses}>Terminate policy</button><br />
             </ul>
             <br />
             <div>
@@ -52,6 +65,6 @@ function JobStatus(status)
   );
 };
 
-let processId = "ee14cf27-6e91-4a7f-8908-d737e7d96cb9";
+let processName = "Demo-TwilioChangeOfAddress";
 
 export default UiPathAgentConsole;
